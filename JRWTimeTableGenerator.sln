@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JRWTimeTableGenerator", "JRWTimeTableGenerator\JRWTimeTableGenerator.csproj", "{D471EA45-08F6-4BCD-AA42-2998C7F45471}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JRWTimeTableGeneratorWeb", "JRWTimeTableGeneratorWeb\JRWTimeTableGeneratorWeb.csproj", "{562D1B18-F29A-4FC8-A1DB-518E834EC6FC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D471EA45-08F6-4BCD-AA42-2998C7F45471}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D471EA45-08F6-4BCD-AA42-2998C7F45471}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D471EA45-08F6-4BCD-AA42-2998C7F45471}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{D471EA45-08F6-4BCD-AA42-2998C7F45471}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D471EA45-08F6-4BCD-AA42-2998C7F45471}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D471EA45-08F6-4BCD-AA42-2998C7F45471}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{562D1B18-F29A-4FC8-A1DB-518E834EC6FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{562D1B18-F29A-4FC8-A1DB-518E834EC6FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{562D1B18-F29A-4FC8-A1DB-518E834EC6FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{562D1B18-F29A-4FC8-A1DB-518E834EC6FC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EAC8AE94-C514-4F3B-B4C2-656570434B4F}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<title>Excel Add-In with Commands Sample</title>
+
+	<script src="Scripts/jquery-3.6.0.js" type="text/javascript"></script>
+	<script src="Scripts/MessageBanner.js" type="text/javascript"></script>
+	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+
+	<!-- Office.js へのローカル参照を使用してオフラインのデバッグを有効にするには、次のスクリプトを使用します。  -->
+	<!-- <script src="Scripts/Office/MicrosoftAjax.js" type="text/javascript"></script>  -->
+	<!-- <script src="Scripts/Office/1/office.js" type="text/javascript"></script>  -->
+
+	<script src="Home.js" type="text/javascript"></script>
+	<link href="Home.css" rel="stylesheet" type="text/css" />
+	<link href="../Content/Button.css" rel="stylesheet" type="text/css" />
+	<link href="../Content/MessageBanner.css" rel="stylesheet" type="text/css" />
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500&display=swap" rel="stylesheet">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Satisfy&family=Stoke&family=Yellowtail&family=Geo&family=Oswald&family=Lobster&family=Cookie&family=Chewy&family=Limelight&family=Sacramento&family=Plaster&display=swap" rel="stylesheet">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+
+
+	<!-- Office UI Fabric Core の詳細については、https://aka.ms/office-ui-fabric を参照してください。 -->
+	<link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.0/css/fabric.min.css">
+
+	<!-- Office UI Fabric Core のオフライン使用を有効にするには、次のものを使用します: -->
+	<!-- link rel="stylesheet" href="Content/fabric.min.css" -->
+</head>
+
+	<!-- Office UI Fabric JS とそのコンポーネントは、アクティブにはサポートされなくなりました。推奨されるパターンとプラクティスについては、https://aka.ms/PnP-OfficeFabricReact を参照してください -->
+	<!-- <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.components.min.css"> -->
+
+<body class="ms-font-m ms-welcome">
+
+	<div id="loading">
+		<p class="loading">列車情報を読み込み中です...<br>しばらくお待ちください...
+	</div>
+
+	<div id="content-header">
+		<div class="padding">
+			<h1>Welcome</h1>
+		</div>
+	</div>
+	<div id="content-main">
+		<div class="padding">
+			<ol>
+				<li>任意の駅のWeb時刻表(<a href="https://www.jr-odekake.net/railroad/#eki">JRおでかけネット</a>)のURLをコピーする</li>
+				<li>設定を確認し、必要であればチェックをつけた後、「作成」をクリックする。</li>
+			</ol>
+			<table>
+				<tr>
+					<th>特急列車を除外</th>
+				</tr>
+				<tr>
+					<td><input type="checkbox" id="limited" checked></td>
+				</tr>
+				<tr>
+					<th>URL入力欄</th>
+				</tr>
+				<tr>
+					<td><input type="text" id="url" class="input"></td>
+				</tr>
+				<tr style="display:none;">
+					<th>ワークシートのサイズ-平日</th>
+				</tr>
+				<tr style="display:none;">
+					<td id="worksheetW" class="worksheet">データ取得後に出力・更新されます</td>
+				</tr>
+				<tr style="display:none;">
+					<th>ワークシートのサイズ-休日</th>
+				</tr>
+				<tr style="display:none;">
+					<td id="worksheetH" class="worksheet">データ取得後に出力・更新されます</td>
+				</tr>
+			</table>
+			<button class="ms-Button" id="run" style="margin-top: 5px;">作成</button><strong id="attention"></strong>
+			<h4 id="copyState">ここにデータの取得状況が表示されます</h4>
+			<p>
+				Webページ：<a href="http://myr4920.starfree.jp/JR_TimeTable/">http://myr4920.starfree.jp/JR_TimeTable/</a><br>
+				作者Twitter：<a href="https://twitter.com/seiyanber3818">https://twitter.com/seiyanber3818</a>
+			</p>
+		</div>
+	</div>
+</body>
+</html>
