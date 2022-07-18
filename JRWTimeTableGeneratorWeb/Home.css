@@ -1,0 +1,199 @@
+﻿/* ページ固有のスタイル */
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    margin: 0 0 40px; /* 下 = フッターの高さ */
+}
+.footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 40px;
+    width: 100%;
+}
+
+.padding {
+    padding: 15px;
+}
+
+#notification-popup.MessageBanner {
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    text-align: left;
+    height: inherit;
+    min-width: inherit;
+}
+
+#notification-popup .MessageBanner-text {
+    margin: 0;
+    padding: 18px 15px;
+    min-width: inherit;
+}
+
+section.samples {
+    margin-top: 20px;
+}
+
+    section.samples .ms-Button, section.setup .ms-Button {
+        display: block;
+        margin-bottom: 5px;
+        margin-left: 20px;
+        min-width: 80px;
+    }
+
+#loading {
+    width: 100vw;
+    height: 100vh;
+    transition: all 1s;
+    background-color: #0bd;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+}
+
+.loading {
+    margin-left: 50px auto;
+    margin-right: 50px auto;
+    text-align: center;
+    font-family: 'Noto Sans JP', serif;
+    font-size: 45px;
+    color: white;
+}
+
+.loaded {
+    opacity: 0;
+    visibility: hidden;
+}
+
+body {
+    margin: 0;
+}
+
+a {
+    color: #004492;
+}
+
+    a.Links {
+        color: #004492;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: #00b9e7;
+    }
+
+header {
+    font-family: 'Roboto Slab', serif;
+    background-image: url("img/TimeTablePhoto.jpg");
+    background-position: center;
+    background-size: 100%;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+    header h1 {
+        color: #e7f7ff;
+        /*letter-spacing: 5px;**/
+        text-shadow: 4px 4px #157fa885;
+        text-align: center;
+        border-top: 10px solid #00449298;
+        border-bottom: 10px solid #00449298;
+        background-color: #00449256;
+        font-size: 500%;
+        margin: 0px;
+    }
+
+section {
+    padding-left: 15%;
+    padding-right: 15%;
+}
+
+.copy {
+    display: none;
+}
+
+.input {
+    padding: 3px 5px;
+    font-size: 15px;
+    border-radius: 3px;
+    border: 2px solid #bebebe;
+    width: auto;
+}
+
+.input:focus {
+    border: 2px solid #ff9900;
+    z-index: 10;
+    outline: 0;
+}
+
+button {
+    background-color: rgb(28, 137, 209);
+    color: #ffffff;
+    padding: 2px 10px 2px 10px;
+    border: 2px #00098d solid;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+h2 {
+    color: rgb(58, 18, 0);
+    font-family: 'Roboto Slab', serif;
+    font-size: 30px;
+    border-bottom: 3px solid rgb(141, 0, 0);
+    padding-top: 0px;
+}
+
+table {
+    border: 3px solid #005092;
+    border-collapse: collapse;
+}
+
+    table tr {
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    table th, td {
+        border: 2px solid #005092;
+        padding: 5px;
+    }
+
+    table th {
+        background-color: #fff6a1;
+        padding: 5px 10px 5px 10px;
+        font-style: normal;
+        font-family: 'Roboto Slab', sans-serif;
+    }
+
+    table tr td.worksheet {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+div.center {
+    text-align: center;
+}
+
+h4 {
+    background-color: #e7e000;
+    padding: 5px;
+    border-radius: 13px;
+    text-align: center;
+    font-size: 18px;
+    font-family: 'Roboto Slab', sans-serif;
+}
+
+footer {
+    color: #ffffff;
+    text-align: center;
+    background-color: #004492;
+    margin-top: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-family: 'Roboto Slab', serif;
+}
