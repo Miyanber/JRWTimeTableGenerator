@@ -223,43 +223,38 @@
 					return
 				}
 				let date = new Date(dateString.substring(0, 4), dateString.substring(4, 6) - 1, dateString.substring(6, 8));
-				const URLArray = getArray(date, URL);
-				console.log(URLArray);
+				let URLObject = getURLObject(date, URL);
 				const phpOption = function (URL) {
 					return {
-						method: "POST",
+						method: "GET",
 						headers: {
 							'Content-Type': 'application/json' // jsonを指定
 						},
 						body: JSON.stringify(URL + "/index.html") // json形式に変換して添付
 					}
 				}
-				const json = [];
-				let destinationUsageArray = [],
-					trainTypeUsageArray = [];
-				await fetch("request.php", phpOption(URLArray[0][0])).then((response) => {
+				const json = []; let destinationUsageArray = [], trainTypeUsageArray = [];
+				await fetch("request.php", phpOption(URLObject.weekdays)).then((response) => {
 					if (!response.ok) {
-						copyState.text(`データの取得に失敗しました(PHP_Response_W):${getTimeString()}`);
-						setStyle(copyState, "error");
-						throw Error("Can't get data from php. (Weekdays)");
+						copyState.innerHTML = `データの取得に失敗しました(PHP_Response_W):${getTimeString()}`;
+						setStyle(copyState, "white", "red");
 					}
-					return response.text(); //レスポンスをそのまま関数の引数に入れてはならない！！
+					return response.text();//レスポンスをそのまま関数の引数に入れてはならない！！
 				}).then((value) => {
-					let element = getTrainAllData(value, URLArray[0][1]);
+					let element = getTrainAllData(value, "weekdays");
 					destinationUsageArray = [...destinationUsageArray, ...element[1].usage[0]];
 					trainTypeUsageArray = [...trainTypeUsageArray, ...element[1].usage[1]];
 					console.log(element, URLArray[0][0]);
 					json.push(element);
 				});
-				await fetch("request.php", phpOption(URLArray[1][0])).then((response) => {
+				await fetch("request.php", phpOption(URLObject.holidays)).then((response) => {
 					if (!response.ok) {
-						copyState.text(`データの取得に失敗しました(PHP_Response_H):${getTimeString()}`);
-						setStyle(copyState, "error");
-						throw Error("Can't get data from php. (Holidays)");
+						copyState.innerHTML = `データの取得に失敗しました(PHP_Response_H):${getTimeString()}`;
+						setStyle(copyState, "white", "red");
 					}
-					return response.text(); //レスポンスをそのまま関数の引数に入れてはならない！！
+					return response.text();//レスポンスをそのまま関数の引数に入れてはならない！！
 				}).then((value) => {
-					let element = getTrainAllData(value, URLArray[1][1]);
+					let element = getTrainAllData(value, "holidays");
 					destinationUsageArray = [...destinationUsageArray, ...element[1].usage[0]];
 					trainTypeUsageArray = [...trainTypeUsageArray, ...element[1].usage[1]];
 					console.log(element, URLArray[1][0]);
@@ -287,6 +282,7 @@
 				json.push(usage);
 				return json
 			}
+
 			/**
 			 * 
 			 * @param {String} innerHTML HTML String
@@ -310,7 +306,8 @@
 				},
 					trainData = [];
 				if (document.getElementsByName("EKI")[0] == null) {
-					copyState.innerHTML = `データの取得に失敗しました(URL):${getTimeString()}`;
+					copyState.html("データの取得に失敗しました。<br>URLが不正です。");
+					throw Error("Can't get data from the URL.");
 					setStyle(copyState, "error");
 					return;
 				}
@@ -428,6 +425,7 @@
 				worksheet(dayString).innerHTML = `<strong>${sheetOptions.number}</strong>以上`
 				document.body.removeChild(HTML);
 				return json;
+				
 			};
 			/**
 			 * 
@@ -604,7 +602,7 @@
 						element.css("color", "white");
 						element.css("background-color", "#006d21");
 						break;
-                }
+				}
 			}
 			/**
 			 * 単位換算用関数
@@ -645,13 +643,13 @@
 				}
 			}
 			/**
-			 * Get the URL Array [Weekday, Holiday]
+			 * Get the URL Object
 			 * 
 			 * @param {Date} date Dateオブジェクト
 			 * @param {String} URL URL文字列
-			 * @returns {Array}
+			 * @returns {Object}
 			 */
-			function getArray(date, URL) {
+			function getURLObject(date, URL) {
 				/**
 				 * 休日判定関数
 				 * @param {Date} date Dateオブジェクト
@@ -661,7 +659,7 @@
 					if (date.getDay() == 0 || date.getDay() == 6) {
 						return true; //土・日
 					} else {
-						for (i = 0; i < holidays.length; i++) {
+						for (let i = 0; i < holidays.length; i++) {
 							if (date.getFullYear() == holidays[i][0] && date.getMonth() + 1 == holidays[i][1] && date.getDate() == holidays[i][2]) {
 								return true;
 							}
@@ -684,22 +682,22 @@
 					}
 				}
 				if (ISHOLIDAYS) {
-					return [
-						[NextURL, "weekdays"],
-						[URL, "holidays"]
-					]
+					return {
+						weekdays: NextURL + "/index.html",
+						holidays: URL + "/index.html"
+					}
 				} else {
-					return [
-						[URL, "weekdays"],
-						[NextURL, "holidays"]
-					]
-				} // [平日, 休日]
+					return {
+						weekdays: URL + "/index.html",
+						holidays: NextURL + "/index.html"
+					}
+				}
 			}
 			/**
 			 * Get the URL parameter value
 			 *
 			 * @param  name {string} パラメータのキー文字列
-			 * @param  url {url} 対象のURL文字列（任意）
+			 * @param  url {url} 対象のURL文字列(任意)
 			 */
 			function getParam(name, url) {
 				if (!url) url = window.location.href;

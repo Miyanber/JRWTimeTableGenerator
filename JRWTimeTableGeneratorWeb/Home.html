@@ -1,37 +1,37 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-	<title>Excel Add-In with Commands Sample</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>Excel Add-In with Commands Sample</title>
 
-	<script src="Scripts/jquery-3.6.0.js" type="text/javascript"></script>
-	<script src="Scripts/MessageBanner.js" type="text/javascript"></script>
-	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+    <script src="Scripts/jquery-3.6.0.js" type="text/javascript"></script>
+    <script src="Scripts/MessageBanner.js" type="text/javascript"></script>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
 
-	<!-- Office.js へのローカル参照を使用してオフラインのデバッグを有効にするには、次のスクリプトを使用します。  -->
-	<!-- <script src="Scripts/Office/MicrosoftAjax.js" type="text/javascript"></script>  -->
-	<!-- <script src="Scripts/Office/1/office.js" type="text/javascript"></script>  -->
+    <!-- Office.js へのローカル参照を使用してオフラインのデバッグを有効にするには、次のスクリプトを使用します。  -->
+    <!-- <script src="Scripts/Office/MicrosoftAjax.js" type="text/javascript"></script>  -->
+    <!-- <script src="Scripts/Office/1/office.js" type="text/javascript"></script>  -->
 
-	<script src="Home.js" type="text/javascript"></script>
-	<link href="Home.css" rel="stylesheet" type="text/css" />
-	<link href="../Content/Button.css" rel="stylesheet" type="text/css" />
-	<link href="../Content/MessageBanner.css" rel="stylesheet" type="text/css" />
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500&display=swap" rel="stylesheet">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Satisfy&family=Stoke&family=Yellowtail&family=Geo&family=Oswald&family=Lobster&family=Cookie&family=Chewy&family=Limelight&family=Sacramento&family=Plaster&display=swap" rel="stylesheet">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+    <script src="Home.js" type="text/javascript"></script>
+    <link href="Home.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/Button.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/MessageBanner.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Satisfy&family=Stoke&family=Yellowtail&family=Geo&family=Oswald&family=Lobster&family=Cookie&family=Chewy&family=Limelight&family=Sacramento&family=Plaster&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
 
 
-	<!-- Office UI Fabric Core の詳細については、https://aka.ms/office-ui-fabric を参照してください。 -->
-	<link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.0/css/fabric.min.css">
+    <!-- Office UI Fabric Core の詳細については、https://aka.ms/office-ui-fabric を参照してください。 -->
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.0/css/fabric.min.css">
 
-	<!-- Office UI Fabric Core のオフライン使用を有効にするには、次のものを使用します: -->
-	<!-- link rel="stylesheet" href="Content/fabric.min.css" -->
+    <!-- Office UI Fabric Core のオフライン使用を有効にするには、次のものを使用します: -->
+    <!-- link rel="stylesheet" href="Content/fabric.min.css" -->
 </head>
 
 	<!-- Office UI Fabric JS とそのコンポーネントは、アクティブにはサポートされなくなりました。推奨されるパターンとプラクティスについては、https://aka.ms/PnP-OfficeFabricReact を参照してください -->
