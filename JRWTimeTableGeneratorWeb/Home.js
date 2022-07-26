@@ -210,6 +210,10 @@
 			}
 
 			async function getAllData() {
+				fetch("go.json").then((response) => {
+					let resText = response.json();
+					console.log(resText)
+                })
 				worksheet("reset");
 				setStyle(copyState);
 				copyState.text("作成中...");
@@ -231,10 +235,11 @@
 					}
 				}
 				const json = []; let destinationUsageArray = [], trainTypeUsageArray = [];
-				await fetch(`request.php`, phpInit).then((response) => {
+				await fetch(`Home.php`, phpInit).then((response) => {
 					if (!response.ok) {
-						copyState.innerHTML = `データの取得に失敗しました(PHP_Response_W):${getTimeString()}`;
-						setStyle(copyState, "white", "red");
+						copyState.text(`データの取得に失敗しました(PHP_Response_W):${getTimeString()}`);
+						setStyle(copyState, "error");
+						throw Error("Can't get data from php. (Weekdays)");
 					}
 					return response.text();//レスポンスをそのまま関数の引数に入れてはならない！！
 				}).then((value) => {
@@ -244,10 +249,11 @@
 					console.log(element, URLArray[0][0]);
 					json.push(element);
 				});
-				await fetch(`request.php`, phpInit).then((response) => {
+				await fetch(`Home.php`, phpInit).then((response) => {
 					if (!response.ok) {
 						copyState.innerHTML = `データの取得に失敗しました(PHP_Response_H):${getTimeString()}`;
 						setStyle(copyState, "white", "red");
+						throw Error("Can't get data from php. (Holidays)");
 					}
 					return response.text();//レスポンスをそのまま関数の引数に入れてはならない！！
 				}).then((value) => {
@@ -304,9 +310,8 @@
 					trainData = [];
 				if (document.getElementsByName("EKI")[0] == null) {
 					copyState.html("データの取得に失敗しました。<br>URLが不正です。");
-					throw Error("Can't get data from the URL.");
 					setStyle(copyState, "error");
-					return;
+					throw Error("Can't get data from the URL.");
 				}
 				station.includesLimitedExp = document.getElementById("limited").checked;
 				station.eki = document.getElementsByName("EKI")[0].value;
