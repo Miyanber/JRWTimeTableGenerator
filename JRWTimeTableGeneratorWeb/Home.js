@@ -210,10 +210,6 @@
 			}
 
 			async function getAllData() {
-				fetch("go.json").then((response) => {
-					let resText = response.json();
-					console.log(resText)
-                })
 				worksheet("reset");
 				setStyle(copyState);
 				copyState.text("作成中...");
