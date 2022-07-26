@@ -223,18 +223,15 @@
 					return
 				}
 				let date = new Date(dateString.substring(0, 4), dateString.substring(4, 6) - 1, dateString.substring(6, 8));
-				let URLObject = getURLObject(date, URL);
-				const phpOption = function (URL) {
-					return {
-						method: "GET",
-						headers: {
-							'Content-Type': 'application/json' // jsonを指定
-						},
-						body: JSON.stringify(URL + "/index.html") // json形式に変換して添付
+				let parameter = getParameterObject(date, URL);
+				const phpInit =  {
+					method: "GET",
+					headers: {
+						'Content-Type': 'application/json' // jsonを指定
 					}
 				}
 				const json = []; let destinationUsageArray = [], trainTypeUsageArray = [];
-				await fetch("request.php", phpOption(URLObject.weekdays)).then((response) => {
+				await fetch(`request.php`, phpInit).then((response) => {
 					if (!response.ok) {
 						copyState.innerHTML = `データの取得に失敗しました(PHP_Response_W):${getTimeString()}`;
 						setStyle(copyState, "white", "red");
@@ -247,7 +244,7 @@
 					console.log(element, URLArray[0][0]);
 					json.push(element);
 				});
-				await fetch("request.php", phpOption(URLObject.holidays)).then((response) => {
+				await fetch(`request.php`, phpInit).then((response) => {
 					if (!response.ok) {
 						copyState.innerHTML = `データの取得に失敗しました(PHP_Response_H):${getTimeString()}`;
 						setStyle(copyState, "white", "red");
@@ -649,7 +646,9 @@
 			 * @param {String} URL URL文字列
 			 * @returns {Object}
 			 */
-			function getURLObject(date, URL) {
+			function getParameterObject(date, URL) {
+				let parameter = URL.substring(URL.indexOf("?"));
+				let nextParameter;
 				/**
 				 * 休日判定関数
 				 * @param {Date} date Dateオブジェクト
@@ -667,29 +666,28 @@
 					}
 					return false
 				}
-				let NextURL;
 				const dateString = date.getFullYear() + ("00" + (date.getMonth() + 1)).slice(-2) + ("00" + date.getDate()).slice(-2);
-				if (!URL.includes("&yearmonth")) {
-					URL += "&yearmonth=" + dateString;
+				if (!parameter.includes("&yearmonth")) {
+					parameter += "&yearmonth=" + dateString;
 				}
 				const ISHOLIDAYS = isHolidays(date);
 				for (let i = 0; i < holidays.length; i++) {
 					date.setDate(date.getDate() + 1);
 					if (isHolidays(date) == !ISHOLIDAYS) {
 						const NextDateString = date.getFullYear() + ("00" + (date.getMonth() + 1)).slice(-2) + ("00" + date.getDate()).slice(-2);
-						NextURL = URL.replace(dateString, NextDateString);
+						nextParameter = parameter.replace(dateString, NextDateString);
 						break;
 					}
 				}
 				if (ISHOLIDAYS) {
 					return {
-						weekdays: NextURL + "/index.html",
-						holidays: URL + "/index.html"
+						weekdays: nextParameter,
+						holidays: parameter
 					}
 				} else {
 					return {
-						weekdays: URL + "/index.html",
-						holidays: NextURL + "/index.html"
+						weekdays: parameter,
+						holidays: nextParameter
 					}
 				}
 			}
