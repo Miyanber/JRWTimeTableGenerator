@@ -5,7 +5,7 @@
 		TRAIN_TYPE_URL = "https://script.google.com/macros/s/AKfycbz2YGPFbOk5RqOju0AONsqDU6AnRzA-X-hORI4qJBM7sjZErZHsvspHSIYPieW3SEkyqQ/exec";
 	let destinationArray; //Google SpreadSheet
 	let trainTypeArray; //Google SpreadSheet
-	let inputURL, copyState, worksheetW, worksheetH;
+	let copyState, worksheetW, worksheetH;
 	Office.onReady(function () {
 		// Office is ready
 		const arrFunc = [];
@@ -44,16 +44,80 @@
 			Promise.all(arrPromise).then(() => {
 				$("#loading").addClass("loaded");
 			});
-			inputURL = $("#url");
 			copyState = $("#copyState");
 			worksheetW = $("#worksheetW");
 			worksheetH = $("#worksheetH");
 			const dayList = ["日", "月", "火", "水", "木", "金", "土"];
+			let fileW = document.getElementById("file1");
+			let fileWState = [$("#weekdaysFileStateEki"), $("#weekdaysFileStateDir"), $("#weekdaysFileStateDay"),];
+			let fileH = document.getElementById("file2");
+			let fileHState = [$("#holidaysFileStateEki"), $("#holidaysFileStateDir"), $("#holidaysFileStateDay"),];
+			fileW.addEventListener("change", () => {
+				eventListener(fileW, fileWState, false);
+			});
+			fileH.addEventListener("change", () => {
+				eventListener(fileH, fileHState, true);
+			})
+			function eventListener(file, fileState, isHoliday1) {
+				fileState[2].css("color", "black");
+				fileState[2].css("font-weight", "normal");
+				let files = file.files[0];
+				if (files.length == 0) {
+					fileState[0].text("選択後表示");
+					fileState[1].text("選択後表示");
+					fileState[2].text("選択後表示");
+					return
+				}
+				const reader = new FileReader();
+				reader.onload = () => {
+					const HTML = document.createElement("section");
+					document.body.appendChild(HTML);
+					HTML.style.display = "none";
+					HTML.innerHTML = reader.result;
+					if (document.getElementsByName("EKI")[0] == null) {
+						fileState.text("不正なファイルです。");
+						return
+					}
+					let dateString = document.getElementById("SearchDate").value;//20220730
+					let isHoliday2 = isHolidays(new Date(Number(dateString.substr(0, 4)), Number(dateString.substr(4, 2)), Number(dateString.substr(6, 2))));
+					if (isHoliday1 == isHoliday2) {
+						if (isHoliday2) {
+							fileState[2].text("土・休日用");
+						} else {
+							fileState[2].text("平日用");
+						}
+					} else {
+						fileState[2].css("color", "red");
+						fileState[2].css("font-weight", "bold");
+						if (isHoliday2) {
+							fileState[2].text("土・休日用");
+						} else {
+							fileState[2].text("平日用");
+						}
+					}
+					fileState[0].text(document.getElementsByName("EKI")[0].value + "駅");
+					fileState[1].text(document.getElementsByName("DIR")[0].value);
+				};
+				reader.readAsText(files);
+			}
+
+			function isHolidays(date) { //同名の変数はローカル変数が優先される
+				if (date.getDay() == 0 || date.getDay() == 6) {
+					return true; //土・日
+				} else {
+					for (let i = 0; i < holidays.length; i++) {
+						if (date.getFullYear() == holidays[i][0] && date.getMonth() + 1 == holidays[i][1] && date.getDate() == holidays[i][2]) {
+							return true;
+						}
+					}
+				}
+				return false
+			}
 
 			async function run() {
 				await Excel.run(async function (context) {
 					const trainAllData = await getAllData();
-					let range, rows, columns;
+					console.log(trainAllData)
 					const usage = trainAllData[2];
 					let station = trainAllData[0][1],
 						weekdays = trainAllData[0],
@@ -104,6 +168,7 @@
 					await context.sync();
 				})
 			}
+
 			/**
 			 * 
 			 * @param {Excel.Range} range
@@ -210,55 +275,35 @@
 			}
 
 			async function getAllData() {
-				worksheet("reset");
-				setStyle(copyState);
-				copyState.text("作成中...");
-				const URL = decodeURI(inputURL.val());
-				const dateString = getParam("DATE", URL);
-				if (dateString === null) {
-					worksheet("error");
-					copyState.html("データの取得に失敗しました。<br>URLが不正です。");
-					setStyle(copyState, "error");
-					throw Error("The URL is incorrect.");
-					return
-				}
-				let date = new Date(dateString.substring(0, 4), dateString.substring(4, 6) - 1, dateString.substring(6, 8));
-				let parameter = getParameterObject(date, URL);
-				const phpInit =  {
-					method: "GET",
-					headers: {
-						'Content-Type': 'application/json' // jsonを指定
-					}
-				}
-				const json = []; let destinationUsageArray = [], trainTypeUsageArray = [];
-				await fetch(`Home.php`, phpInit).then((response) => {
-					if (!response.ok) {
-						copyState.text(`データの取得に失敗しました(PHP_Response_W):${getTimeString()}`);
-						setStyle(copyState, "error");
-						throw Error("Can't get data from php. (Weekdays)");
-					}
-					return response.text();//レスポンスをそのまま関数の引数に入れてはならない！！
-				}).then((value) => {
-					let element = getTrainAllData(value, "weekdays");
+				const json = [];
+				let destinationUsageArray = [], trainTypeUsageArray = [];
+				//worksheet("reset");
+				setStyle("start", "作成中...");
+				fileW = document.getElementById("file1").files[0];
+				fileH = document.getElementById("file2").files[0];
+				const readerW = new FileReader();
+				const readerH = new FileReader();
+				//平日
+				await (async() => {
+					readerW.readAsText(fileW);
+					await new Promise(resolve => readerW.onload = () => resolve());
+					let element = getTrainAllData(readerW.result, "weekdays");
 					destinationUsageArray = [...destinationUsageArray, ...element[1].usage[0]];
 					trainTypeUsageArray = [...trainTypeUsageArray, ...element[1].usage[1]];
-					console.log(element, URLArray[0][0]);
+					console.log(element);
 					json.push(element);
-				});
-				await fetch(`Home.php`, phpInit).then((response) => {
-					if (!response.ok) {
-						copyState.innerHTML = `データの取得に失敗しました(PHP_Response_H):${getTimeString()}`;
-						setStyle(copyState, "white", "red");
-						throw Error("Can't get data from php. (Holidays)");
-					}
-					return response.text();//レスポンスをそのまま関数の引数に入れてはならない！！
-				}).then((value) => {
-					let element = getTrainAllData(value, "holidays");
+				})();
+				//土・休日
+				await (async() => {
+					readerH.readAsText(fileH);
+					await new Promise(resolve => readerH.onload = () => resolve());
+					let element = getTrainAllData(readerH.result, "holidays");
 					destinationUsageArray = [...destinationUsageArray, ...element[1].usage[0]];
 					trainTypeUsageArray = [...trainTypeUsageArray, ...element[1].usage[1]];
-					console.log(element, URLArray[1][0]);
+					console.log(element);
 					json.push(element);
-				});
+				})();
+				console.log(destinationUsageArray)
 				//#region Usage作成
 				destinationUsageArray = [...new Set(destinationUsageArray)].sort((a, b) => {
 					if (b.includes("無印＝")) {
@@ -276,7 +321,9 @@
 				const trainTypeUsageArray1 = trainTypeUsageArray.filter((value) => value[1] >= 20).map((value) => value[0]);
 				const trainTypeUsageArray2 = trainTypeUsageArray.filter((value) => value[1] < 20).map((value) => value[0]);
 				let usage = `${trainTypeUsageArray1.join("　")}\n${trainTypeUsageArray2.join("　")}\n${destinationUsageArray.join("　")}`;
-				if (usage.includes("\n\n")) usage = usage.replace("\n\n", "\n");
+				if (usage.includes("\n\n")) {
+					usage.replace("\n\n", "\n");
+				}
 				//#endregion
 				json.push(usage);
 				return json
@@ -305,8 +352,7 @@
 				},
 					trainData = [];
 				if (document.getElementsByName("EKI")[0] == null) {
-					copyState.html("データの取得に失敗しました。<br>URLが不正です。");
-					setStyle(copyState, "error");
+					setStyle("error", "データの取得に失敗しました。<br>URLが不正です。");
 					throw Error("Can't get data from the URL.");
 				}
 				station.includesLimitedExp = document.getElementById("limited").checked;
@@ -333,7 +379,7 @@
 					}
 				});
 				station.eki += "駅";
-				date = new Date();
+				let date = new Date();
 				//ここから各種シート設定
 				let maxIndex = [],
 					destinationUsageArray = [],
@@ -583,10 +629,11 @@
 			/**
 			 * 
 			 * @param {JQueryStatic} element
-			 * @param {String} color
-			 * @param {String} backgroundColor
+			 * @param {String} type
+			 * @param {String} text
 			 */
-			function setStyle(element, type) { //デフォルトは背景黄色
+			function setStyle(type, text = null) { //デフォルトは背景黄色
+				const element = copyState;
 				switch (type) {
 					case "error":
 						element.css("color", "white");
@@ -600,6 +647,11 @@
 						element.css("color", "white");
 						element.css("background-color", "#006d21");
 						break;
+					default:
+						break;
+				}
+				if (text !== null) {
+					element.html(text);
 				}
 			}
 			/**
@@ -640,73 +692,6 @@
 						return NaN
 				}
 			}
-			/**
-			 * Get the URL Object
-			 * 
-			 * @param {Date} date Dateオブジェクト
-			 * @param {String} URL URL文字列
-			 * @returns {Object}
-			 */
-			function getParameterObject(date, URL) {
-				let parameter = URL.substring(URL.indexOf("?"));
-				let nextParameter;
-				/**
-				 * 休日判定関数
-				 * @param {Date} date Dateオブジェクト
-				 * @returns 
-				 */
-				function isHolidays(date) { //同名の変数はローカル変数が優先される
-					if (date.getDay() == 0 || date.getDay() == 6) {
-						return true; //土・日
-					} else {
-						for (let i = 0; i < holidays.length; i++) {
-							if (date.getFullYear() == holidays[i][0] && date.getMonth() + 1 == holidays[i][1] && date.getDate() == holidays[i][2]) {
-								return true;
-							}
-						}
-					}
-					return false
-				}
-				const dateString = date.getFullYear() + ("00" + (date.getMonth() + 1)).slice(-2) + ("00" + date.getDate()).slice(-2);
-				if (!parameter.includes("&yearmonth")) {
-					parameter += "&yearmonth=" + dateString;
-				}
-				const ISHOLIDAYS = isHolidays(date);
-				for (let i = 0; i < holidays.length; i++) {
-					date.setDate(date.getDate() + 1);
-					if (isHolidays(date) == !ISHOLIDAYS) {
-						const NextDateString = date.getFullYear() + ("00" + (date.getMonth() + 1)).slice(-2) + ("00" + date.getDate()).slice(-2);
-						nextParameter = parameter.replace(dateString, NextDateString);
-						break;
-					}
-				}
-				if (ISHOLIDAYS) {
-					return {
-						weekdays: nextParameter,
-						holidays: parameter
-					}
-				} else {
-					return {
-						weekdays: parameter,
-						holidays: nextParameter
-					}
-				}
-			}
-			/**
-			 * Get the URL parameter value
-			 *
-			 * @param  name {string} パラメータのキー文字列
-			 * @param  url {url} 対象のURL文字列(任意)
-			 */
-			function getParam(name, url) {
-				if (!url) url = window.location.href;
-				name = name.replace(/[\[\]]/g, "\\$&");
-				var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-					results = regex.exec(url);
-				if (!results) return null;
-				if (!results[2]) return '';
-				return decodeURIComponent(results[2].replace(/\+/g, " "));
-			}
 
 			function worksheet(day) {
 				switch (day) {
@@ -717,6 +702,7 @@
 					case "reset":
 						worksheetW.text("更新中...");
 						worksheetH.text("更新中...");
+						break;
 					case "error":
 						worksheetW.text("データ取得後に出力・更新されます");
 						worksheetH.text("データ取得後に出力・更新されます");

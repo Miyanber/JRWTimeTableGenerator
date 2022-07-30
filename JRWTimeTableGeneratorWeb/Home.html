@@ -51,37 +51,36 @@
 	<div id="content-main">
 		<div class="padding">
 			<ol>
-				<li>任意の駅のWeb時刻表(<a href="https://www.jr-odekake.net/railroad/#eki">JRおでかけネット</a>)のURLをコピーする</li>
+				<li>任意の駅のWeb時刻表(<a href="https://www.jr-odekake.net/railroad/#eki">JRおでかけネット</a>)を、平日用・土休日用それぞれHTML形式で保存する</li>
+				<li>平日用・土休日用それぞれファイルを選択する(下線部クリックで選択可)</li>
 				<li>設定を確認し、必要であればチェックをつけた後、「作成」をクリックする。</li>
 			</ol>
-			<table>
+			<table class="option">
+				<tr>
+					<th rowspan="3"><label class="upload">平日用<input type="file" id="file1" style="display:none;" accept=".html"></label></th><td id="weekdaysFileStateEki">選択後表示</td>
+				</tr>
+				<tr>
+					<td id="weekdaysFileStateDir">選択後表示</td>
+				</tr>
+				<tr>
+					<td id="weekdaysFileStateDay">選択後表示</td>
+				</tr>
+				<tr>
+					<th rowspan="3"><label class="upload">土・休日用<input type="file" id="file2" style="display:none;" accept=".html"></label></th><td id="holidaysFileStateEki">選択後表示</td>
+				</tr>
+				<tr>
+					<td id="holidaysFileStateDir">選択後表示</td>
+				</tr>
+				<tr>
+					<td id="holidaysFileStateDay">選択後表示</td>
+				</tr>
 				<tr>
 					<th>特急列車を除外</th>
-				</tr>
-				<tr>
-					<td><input type="checkbox" id="limited" checked></td>
-				</tr>
-				<tr>
-					<th>URL入力欄</th>
-				</tr>
-				<tr>
-					<td><input type="text" id="url" class="input"></td>
-				</tr>
-				<tr style="display:none;">
-					<th>ワークシートのサイズ-平日</th>
-				</tr>
-				<tr style="display:none;">
-					<td id="worksheetW" class="worksheet">データ取得後に出力・更新されます</td>
-				</tr>
-				<tr style="display:none;">
-					<th>ワークシートのサイズ-休日</th>
-				</tr>
-				<tr style="display:none;">
-					<td id="worksheetH" class="worksheet">データ取得後に出力・更新されます</td>
+					<td style="text-align:center;"><input type="checkbox" id="limited" checked></td>
 				</tr>
 			</table>
 			<button class="ms-Button" id="run" style="margin-top: 5px;">作成</button><strong id="attention"></strong>
-			<h4 id="copyState">ここにデータの取得状況が表示されます</h4>
+			<h4 id="copyState">ここにデータ取得状況が表示されます</h4>
 			<p>
 				Webページ：<a href="http://myr4920.starfree.jp/JR_TimeTable/">http://myr4920.starfree.jp/JR_TimeTable/</a><br>
 				作者Twitter：<a href="https://twitter.com/seiyanber3818">https://twitter.com/seiyanber3818</a>
