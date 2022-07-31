@@ -1,42 +1,38 @@
 ﻿'use strict';
 
 (function () {
-	const DESTINATION_URL = "https://script.google.com/macros/s/AKfycbwlrB8oXEt4hLlEjsQkVQ-tVjHdbVHRHzHeLryZnOq2zMzn_To6ymBqTW0QWfibbNk/exec",
-		TRAIN_TYPE_URL = "https://script.google.com/macros/s/AKfycbz2YGPFbOk5RqOju0AONsqDU6AnRzA-X-hORI4qJBM7sjZErZHsvspHSIYPieW3SEkyqQ/exec";
-	let destinationArray; //Google SpreadSheet
-	let trainTypeArray; //Google SpreadSheet
+	class loadSpreadSheet {
+		constructor() {
+			this.DESTINATION_URL = "https://script.google.com/macros/s/AKfycbwlrB8oXEt4hLlEjsQkVQ-tVjHdbVHRHzHeLryZnOq2zMzn_To6ymBqTW0QWfibbNk/exec";
+			this.TRAIN_TYPE_URL = "https://script.google.com/macros/s/AKfycbz2YGPFbOk5RqOju0AONsqDU6AnRzA-X-hORI4qJBM7sjZErZHsvspHSIYPieW3SEkyqQ/exec";
+		}
+		async getArray(url) {
+			return await fetch(url).then((response) => {
+				return response.json();
+			}).then((json) => {
+				return JSON.parse(JSON.stringify(json, null, " "));
+			}).then((json) => {
+				return json.allData;
+			}).catch((error) => {
+				console.log(error);
+				throw Error(`Cannot load the Spread Sheet. URL:'${url}'.`);
+			});
+		}
+		async getDestinationArray() {
+			return await this.getArray(this.DESTINATION_URL);
+		}
+		async getTrainTypeArray() {
+			return await this.getArray(this.TRAIN_TYPE_URL);
+		}
+	}
 	let copyState, worksheetW, worksheetH;
 	Office.onReady(function () {
 		// Office is ready
 		const arrFunc = [];
-		const fetchD = (resolve) => {
-			fetch(DESTINATION_URL).then((response) => {
-				return response.json();
-			}).then((obj) => {
-				return JSON.parse(JSON.stringify(obj, null, " "));
-			}).then((jsonObj) => {
-				destinationArray = jsonObj.allData;
-				resolve();
-			}).catch((error) => {
-				console.log(error);
-				throw Error("Cannot load the Destination Spread Sheet.");
-			})
-		};
-		arrFunc.push(fetchD);
-		const fetchT = (resolve) => {
-			fetch(TRAIN_TYPE_URL).then((response) => {
-				return response.json();
-			}).then((obj) => {
-				return JSON.parse(JSON.stringify(obj, null, " "));
-			}).then((jsonObj) => {
-				trainTypeArray = jsonObj.allData;
-				resolve();
-			}).catch((error) => {
-				console.log(error);
-				throw Error("Cannot load the TrainType Spread Sheet.");
-			})
-		};
-		arrFunc.push(fetchT);
+		const loadSpreadSheetConstructor = new loadSpreadSheet();
+		let destinationArray, trainTypeArray;
+		arrFunc.push(async (resolve) => { destinationArray = await loadSpreadSheetConstructor.getDestinationArray(); resolve(); });
+		arrFunc.push(async (resolve) => { trainTypeArray = await loadSpreadSheetConstructor.getTrainTypeArray(); resolve(); });
 		const arrPromise = arrFunc.map((func) => new Promise(func));
 		
 		$(document).ready(function () {
@@ -47,25 +43,30 @@
 			copyState = $("#copyState");
 			worksheetW = $("#worksheetW");
 			worksheetH = $("#worksheetH");
-			const dayList = ["日", "月", "火", "水", "木", "金", "土"];
 			let fileW = document.getElementById("file1");
 			let fileWState = [$("#weekdaysFileStateEki"), $("#weekdaysFileStateDir"), $("#weekdaysFileStateDay"),];
 			let fileH = document.getElementById("file2");
 			let fileHState = [$("#holidaysFileStateEki"), $("#holidaysFileStateDir"), $("#holidaysFileStateDay"),];
 			fileW.addEventListener("change", () => {
-				eventListener(fileW, fileWState, false);
+				eventListener(document.getElementById("file1"), fileWState, false);
 			});
 			fileH.addEventListener("change", () => {
-				eventListener(fileH, fileHState, true);
+				eventListener(document.getElementById("file2"), fileHState, true);
 			})
+			/**
+			 * 
+			 * @param {HTMLInputElement} file
+			 * @param {Array<JQuery>} fileState
+			 * @param {Boolean} isHoliday1
+			 */
 			function eventListener(file, fileState, isHoliday1) {
 				fileState[2].css("color", "black");
 				fileState[2].css("font-weight", "normal");
+				fileState[0].text("選択後表示");
+				fileState[1].text("選択後表示");
+				fileState[2].text("選択後表示");
 				let files = file.files[0];
 				if (files.length == 0) {
-					fileState[0].text("選択後表示");
-					fileState[1].text("選択後表示");
-					fileState[2].text("選択後表示");
 					return
 				}
 				const reader = new FileReader();
@@ -78,8 +79,15 @@
 						fileState.text("不正なファイルです。");
 						return
 					}
-					let dateString = document.getElementById("SearchDate").value;//20220730
-					let isHoliday2 = isHolidays(new Date(Number(dateString.substr(0, 4)), Number(dateString.substr(4, 2)), Number(dateString.substr(6, 2))));
+					let dateString = String(document.getElementById("SearchDate").value);//20220730
+					let date = ((dateString) => {
+						const year = Number(dateString.substr(0, 4)),
+							month = Number(dateString.substr(4, 2)),
+							today = Number(dateString.substr(6, 2));
+						let date = new Date(year, month - 1, today);//month is 0-index.
+						return date;
+					})(dateString);
+					let isHoliday2 = isHolidays(date);
 					if (isHoliday1 == isHoliday2) {
 						if (isHoliday2) {
 							fileState[2].text("土・休日用");
@@ -97,10 +105,15 @@
 					}
 					fileState[0].text(document.getElementsByName("EKI")[0].value + "駅");
 					fileState[1].text(document.getElementsByName("DIR")[0].value);
+					document.body.removeChild(HTML);
 				};
 				reader.readAsText(files);
 			}
 
+			/**
+			 * 
+			 * @param {Date} date
+			 */
 			function isHolidays(date) { //同名の変数はローカル変数が優先される
 				if (date.getDay() == 0 || date.getDay() == 6) {
 					return true; //土・日
@@ -115,18 +128,25 @@
 			}
 
 			async function run() {
+				const trainAllData = await getAllData();
+				if (trainAllData == null) {
+					return
+				}
+				console.log(trainAllData)
+				const usage = trainAllData[2];
+				const station = trainAllData[0][1],
+					weekdays = trainAllData[0],
+					holidays = trainAllData[1];
+				const worksheetUsage = `${station.eki}:${station.dir}`
 				await Excel.run(async function (context) {
-					const trainAllData = await getAllData();
-					console.log(trainAllData)
-					const usage = trainAllData[2];
-					let station = trainAllData[0][1],
-						weekdays = trainAllData[0],
-						holidays = trainAllData[1];
 					/**
 					 * weekdays,holidaysの中身：
 					 * {trainData, station, sheetOptions}
 					 */
-					var sheet = context.workbook.worksheets.getActiveWorksheet();
+					let myWorkbook = context.workbook;
+					let basedSheet = myWorkbook.worksheets.getItem("base");
+					console.log(basedSheet);
+					let sheet = basedSheet.copy(Excel.WorksheetPositionType.beginning);
 					sheet.getRange("C44").values = [
 						[usage]
 					];
@@ -166,7 +186,12 @@
 					setAllData(rangeW, weekdays, true, station);
 					setAllData(rangeH, holidays, false, station);
 					await context.sync();
-				})
+					message("ok", "処理完了");
+				});
+				/*await Excel.run(async (context) => {
+					context.workbook.worksheets.getFirst().name = worksheetUsage;
+					await context.sync();
+                })*/
 			}
 
 			/**
@@ -271,16 +296,18 @@
 						}
 					}
 				}
-				copyState.text("処理完了");
 			}
 
 			async function getAllData() {
 				const json = [];
 				let destinationUsageArray = [], trainTypeUsageArray = [];
-				//worksheet("reset");
-				setStyle("start", "作成中...");
+				message("start", "作成中...");
 				fileW = document.getElementById("file1").files[0];
 				fileH = document.getElementById("file2").files[0];
+				if (fileW == null || fileH == null) {
+					message("error", "ファイルを選択してください!");
+					return null;
+				}
 				const readerW = new FileReader();
 				const readerH = new FileReader();
 				//平日
@@ -290,7 +317,6 @@
 					let element = getTrainAllData(readerW.result, "weekdays");
 					destinationUsageArray = [...destinationUsageArray, ...element[1].usage[0]];
 					trainTypeUsageArray = [...trainTypeUsageArray, ...element[1].usage[1]];
-					console.log(element);
 					json.push(element);
 				})();
 				//土・休日
@@ -300,10 +326,8 @@
 					let element = getTrainAllData(readerH.result, "holidays");
 					destinationUsageArray = [...destinationUsageArray, ...element[1].usage[0]];
 					trainTypeUsageArray = [...trainTypeUsageArray, ...element[1].usage[1]];
-					console.log(element);
 					json.push(element);
 				})();
-				console.log(destinationUsageArray)
 				//#region Usage作成
 				destinationUsageArray = [...new Set(destinationUsageArray)].sort((a, b) => {
 					if (b.includes("無印＝")) {
@@ -352,7 +376,7 @@
 				},
 					trainData = [];
 				if (document.getElementsByName("EKI")[0] == null) {
-					setStyle("error", "データの取得に失敗しました。<br>URLが不正です。");
+					message("error", "データの取得に失敗しました。<br>URLが不正です。");
 					throw Error("Can't get data from the URL.");
 				}
 				station.includesLimitedExp = document.getElementById("limited").checked;
@@ -632,7 +656,7 @@
 			 * @param {String} type
 			 * @param {String} text
 			 */
-			function setStyle(type, text = null) { //デフォルトは背景黄色
+			function message(type, text = null) { //デフォルトは背景黄色
 				const element = copyState;
 				switch (type) {
 					case "error":
@@ -713,11 +737,13 @@
 		});
 	});
 	/** Default helper for invoking an action and handling errors. */
-	function tryCatch(callback) {
-		Promise.resolve().then(callback).catch(function (error) {
+	async function tryCatch(callback) {
+		try {
+			await callback();
+		} catch (error) {
 			// Note: In a production add-in, you'd want to notify the user through your add-in's UI.
 			console.error(error);
-		});
+		}
 	}
 	const holidays = [
 		[2022, 1, 1],
