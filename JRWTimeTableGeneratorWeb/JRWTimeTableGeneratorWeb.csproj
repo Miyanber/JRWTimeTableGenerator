@@ -106,7 +106,6 @@
     <Content Include="Content\sass\mixins\_Animation.Mixins.scss" />
     <Content Include="Content\sass\Fabric.scss" />
     <Content Include="Content\sass\Fabric.Scoped.scss" />
-    <None Include="Properties\PublishProfiles\JRWTimeTableGenerator.pubxml" />
     <None Include="Scripts\jquery-3.6.0.intellisense.js" />
     <Content Include="Functions\FunctionFile.html" />
     <Content Include="Functions\FunctionFile.js" />

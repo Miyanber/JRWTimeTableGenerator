@@ -128,25 +128,33 @@
 			}
 
 			async function run() {
+				message("start", "作成中...");
 				const trainAllData = await getAllData();
 				if (trainAllData == null) {
 					return
 				}
-				console.log(trainAllData)
-				const usage = trainAllData[2];
-				const station = trainAllData[0][1],
+				console.log(trainAllData);
+				const usage = trainAllData[2],
+					station = trainAllData[0][1],
 					weekdays = trainAllData[0],
 					holidays = trainAllData[1];
-				const worksheetUsage = `${station.eki}:${station.dir}`
+				//baseシートの存在確認
+				try {
+					await Excel.run(async (context) => {
+						let basedSheet = context.workbook.worksheets.getItem("base");
+						await context.sync();
+					})
+                } catch (e) {
+					message("error", `「base」シートが存在しません。<br>ダウンロードしてください。`);
+					console.log(e);
+					return;
+                }
 				await Excel.run(async function (context) {
-					/**
-					 * weekdays,holidaysの中身：
-					 * {trainData, station, sheetOptions}
-					 */
-					let myWorkbook = context.workbook;
-					let basedSheet = myWorkbook.worksheets.getItem("base");
-					console.log(basedSheet);
+					// weekdays,holidaysの中身：{ trainData, station, sheetOptions }
+					let basedSheet = context.workbook.worksheets.getItem("base");
 					let sheet = basedSheet.copy(Excel.WorksheetPositionType.beginning);
+					const worksheetUsage = `${station.eki}-${station.dir}`;
+					sheet.name = worksheetUsage;
 					sheet.getRange("C44").values = [
 						[usage]
 					];
@@ -301,7 +309,6 @@
 			async function getAllData() {
 				const json = [];
 				let destinationUsageArray = [], trainTypeUsageArray = [];
-				message("start", "作成中...");
 				fileW = document.getElementById("file1").files[0];
 				fileH = document.getElementById("file2").files[0];
 				if (fileW == null || fileH == null) {
@@ -733,7 +740,7 @@
 						break;
 				}
 			}
-			$("#run").click(() => tryCatch(run));
+			$("#run").click(async() => await run());
 		});
 	});
 	/** Default helper for invoking an action and handling errors. */

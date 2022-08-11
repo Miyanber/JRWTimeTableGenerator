@@ -15,7 +15,7 @@
   <!--バージョン。ストアから更新がトリガーされるのは、バージョンに変更があった場合だけです。 -->
   <Version>1.0.0.0</Version>
   <ProviderName>Miyanber</ProviderName>
-  <DefaultLocale>en-JP</DefaultLocale>
+  <DefaultLocale>en-US</DefaultLocale>
   <!-- アドインの表示名。ストアのほか、Office UI のさまざまな場所 (アドイン ダイアログなど) で使われます。 -->
   <DisplayName DefaultValue="JRWTimeTableGenerator" />
   <Description DefaultValue="Create JRWest TimeTable from HTML files."/>
