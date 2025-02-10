@@ -1,1 +1,2 @@
 # JRWTimeTableGenerator
+JR西日本の公式ホームページの時刻表から、かつてのポケット時刻表を再現するExcelアドイン。（だったと思う）
