@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 (function () {
 	class loadSpreadSheet {
@@ -71,11 +71,9 @@
 				}
 				const reader = new FileReader();
 				reader.onload = () => {
-					const HTML = document.createElement("section");
-					document.body.appendChild(HTML);
-					HTML.style.display = "none";
-					HTML.innerHTML = reader.result;
-					if (document.getElementsByName("EKI")[0] == null) {
+					// DOMParser で解析することで、読み込んだHTML内のスクリプトやイベントハンドラを実行させない
+					const doc = new DOMParser().parseFromString(String(reader.result), "text/html");
+					if (doc.getElementsByName("EKI")[0] == null) {
 						fileState.text("不正なファイルです。");
 						return
 					}
@@ -103,9 +101,8 @@
 							fileState[2].text("平日用");
 						}
 					}
-					fileState[0].text(document.getElementsByName("EKI")[0].value + "駅");
-					fileState[1].text(document.getElementsByName("DIR")[0].value);
-					document.body.removeChild(HTML);
+					fileState[0].text(doc.getElementsByName("EKI")[0].value + "駅");
+					fileState[1].text(doc.getElementsByName("DIR")[0].value);
 				};
 				reader.readAsText(files);
 			}
@@ -368,11 +365,8 @@
 			 */
 			function getTrainAllData(innerHTML, dayString) {
 				let json = [];
-				//Web時刻表の要素を作成
-				const HTML = document.createElement("section");
-				document.body.appendChild(HTML);
-				HTML.style.display = "none";
-				HTML.innerHTML = innerHTML;
+				//Web時刻表の要素を作成(DOMParser で解析し、スクリプトやイベントハンドラを実行させない)
+				const doc = new DOMParser().parseFromString(String(innerHTML), "text/html");
 				let station = {
 					eki: "",
 					dir: "",
@@ -382,16 +376,16 @@
 					usage: null
 				},
 					trainData = [];
-				if (document.getElementsByName("EKI")[0] == null) {
+				if (doc.getElementsByName("EKI")[0] == null) {
 					message("error", "データの取得に失敗しました。<br>URLが不正です。");
 					throw Error("Can't get data from the URL.");
 				}
 				station.includesLimitedExp = document.getElementById("limited").checked;
-				station.eki = document.getElementsByName("EKI")[0].value;
-				station.dir = document.getElementsByName("DIR")[0].value;
+				station.eki = doc.getElementsByName("EKI")[0].value;
+				station.dir = doc.getElementsByName("DIR")[0].value;
 				station.day = dayString; //平日/土・休日
-				station.senk = document.getElementsByName("SENK")[0].value;
-				document.querySelectorAll(".hour").forEach((element) => {
+				station.senk = doc.getElementsByName("SENK")[0].value;
+				doc.querySelectorAll(".hour").forEach((element) => {
 					const tr = element.parentNode, //<tr>
 						nbsp = tr.lastElementChild; //&nbsp判定用
 					let hour = parseInt(tr.firstChild.innerHTML); //<th>
@@ -498,7 +492,6 @@
 				}
 				json = [trainData, station, sheetOptions];
 				worksheet(dayString).innerHTML = `<strong>${sheetOptions.number}</strong>以上`
-				document.body.removeChild(HTML);
 				return json;
 				
 			};
